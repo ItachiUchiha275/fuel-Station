@@ -43,12 +43,21 @@
 
   <div id="dpanel-map" class="driver-panel">
     <div class="filter-bar">
+      <div class="search-wrap" style="flex:1;min-width:200px">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" class="form-input" id="location-search" placeholder="Search location (e.g. Chittagong, Sylhet...)" onkeydown="if(event.key==='Enter')searchLocation()">
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="searchLocation()"><i class="fas fa-search"></i> Search</button>
+      <button class="btn btn-outline btn-sm" onclick="useMyLocation()"><i class="fas fa-crosshairs"></i> My Location</button>
+    </div>
+    <div class="filter-bar">
       <div>
         <label>Radius:</label>
         <div class="radio-group">
           <input type="radio" name="radius" value="3" id="r3" onchange="loadNearbyStations()"><label for="r3">3 km</label>
-          <input type="radio" name="radius" value="5" id="r5" checked onchange="loadNearbyStations()"><label for="r5">5 km</label>
           <input type="radio" name="radius" value="10" id="r10" onchange="loadNearbyStations()"><label for="r10">10 km</label>
+          <input type="radio" name="radius" value="50" id="r50" onchange="loadNearbyStations()"><label for="r50">50 km</label>
+          <input type="radio" name="radius" value="500" id="r500" checked onchange="loadNearbyStations()"><label for="r500">All BD</label>
         </div>
       </div>
       <div>

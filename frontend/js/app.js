@@ -138,8 +138,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // --- DRIVER PAGE ---
 
-let userLat = 23.8103;
-let userLng = 90.4125;
+let userLat = 23.6850;
+let userLng = 90.3563;
 let driverTab = 'map';
 
 function switchDriverTab(tab) {
@@ -153,7 +153,7 @@ function switchDriverTab(tab) {
 
 function initMap() {
   if (mapInitialized) return;
-  map = L.map('map').setView([userLat, userLng], 13);
+  map = L.map('map').setView([userLat, userLng], 7);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; OpenStreetMap'
@@ -182,6 +182,47 @@ function initMap() {
 
 function clearMapMarkers() {
   if (markers.length) { markers.forEach(m => map.removeLayer(m)); markers = []; }
+}
+
+async function searchLocation() {
+  const query = document.getElementById('location-search').value.trim();
+  if (!query) return;
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)},Bangladesh&format=json&limit=5`);
+    const data = await r.json();
+    if (!data.length) { alert('Location not found'); return; }
+    // Show suggestions if multiple results
+    if (data.length > 1) {
+      const names = data.map((d, i) => `${i+1}. ${d.display_name.split(',')[0]}`);
+      const choice = prompt(`Multiple locations found. Enter number:\n${names.join('\n')}`);
+      if (!choice || choice < 1 || choice > data.length) return;
+      const loc = data[choice - 1];
+      userLat = parseFloat(loc.lat);
+      userLng = parseFloat(loc.lon);
+    } else {
+      userLat = parseFloat(data[0].lat);
+      userLng = parseFloat(data[0].lon);
+    }
+    map.setView([userLat, userLng], 10);
+    loadNearbyStations();
+    L.marker([userLat, userLng], {
+      icon: L.divIcon({ className: 'user-marker', html: '<div style="background:#e53935;width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)"></div>', iconSize: [14,14], iconAnchor: [7,7] })
+    }).addTo(map).bindPopup(`<strong>${query}</strong>`);
+  } catch (err) { alert('Search failed'); }
+}
+
+function useMyLocation() {
+  if (!navigator.geolocation) { alert('Geolocation not available'); return; }
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      userLat = pos.coords.latitude;
+      userLng = pos.coords.longitude;
+      map.setView([userLat, userLng], 12);
+      loadNearbyStations();
+    },
+    () => alert('Could not get location'),
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
 }
 
 async function loadNearbyStations() {
