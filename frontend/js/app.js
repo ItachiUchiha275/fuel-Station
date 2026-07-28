@@ -322,15 +322,17 @@ async function confirmReservation() {
   const stationId = parseInt(document.getElementById('reserve-station-id').value);
   const startTime = document.getElementById('reserve-start').value;
   const duration = parseInt(document.getElementById('reserve-duration').value);
+  const payment = document.getElementById('reserve-payment').value;
   if (!startTime || !duration) { alert('Please fill all fields'); return; }
   try {
     const r = await API.createBooking({
       station_id: stationId,
       start_time: new Date(startTime).toISOString(),
-      duration_hours: duration
+      duration_hours: duration,
+      payment_method: payment
     });
     modal('reserve-modal', false);
-    alert(`Booking confirmed!\nToken: ${r.token}\nCost: ৳${r.cost}\nDuration: ${r.duration_hours}hr`);
+    alert(`Booking confirmed!\nToken: ${r.token}\nCost: ৳${r.cost}\nPayment: ${payment}`);
     loadNearbyStations();
   } catch (err) { alert('Booking failed: ' + err.message); }
 }

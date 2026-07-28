@@ -132,9 +132,10 @@ class FuelPriceUpdate(BaseModel):
 
 class BookingCreate(BaseModel):
     station_id: int
-    start_time: str  # ISO format
+    start_time: str
     duration_hours: int
     vehicle_type: Optional[str] = None
+    payment_method: Optional[str] = "mobile banking(bkash/nagad)"
 
 
 class TokenLookup(BaseModel):
@@ -490,6 +491,7 @@ def create_booking(req: BookingCreate, request: Request, db: Session = Depends(g
         duration_hours=req.duration_hours,
         cost=cost,
         vehicle_type=req.vehicle_type or user.vehicle_type,
+        payment_method=req.payment_method or "mobile banking(bkash/nagad)",
         status=BookingStatus.active.value
     )
     db.add(booking)
@@ -503,7 +505,8 @@ def create_booking(req: BookingCreate, request: Request, db: Session = Depends(g
         "start_time": booking.start_time.isoformat(),
         "duration_hours": booking.duration_hours,
         "cost": booking.cost,
-        "status": booking.status
+        "status": booking.status,
+        "payment_method": booking.payment_method
     }
 
 
