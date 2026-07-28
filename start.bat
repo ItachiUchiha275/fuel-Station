@@ -1,9 +1,66 @@
 @echo off
-cd /d "C:\Users\Administrator\Desktop\Fuel Station\backend"
-start "ParkEase Server" cmd /k "python -m uvicorn app:app --host 0.0.0.0 --port 8000"
+title ParkEase - Starting...
+cd /d "%~dp0backend"
+
+echo ============================================
+echo    ParkEase - Parking ^& Fuel Station BD
+echo    University Project
+echo ============================================
+echo.
+
+REM Check Python
+python --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [ERROR] Python is not installed!
+    echo Download from: https://www.python.org/downloads/
+    echo Make sure to check "Add Python to PATH" during installation.
+    pause
+    exit /b
+)
+
+REM Install dependencies
+echo [1/4] Installing dependencies...
+pip install -q fastapi uvicorn sqlalchemy python-multipart passlib bcrypt pydantic itsdangerous 2>&1
+if %errorlevel% neq 0 (
+    echo [ERROR] Failed to install dependencies. Try running as Administrator.
+    pause
+    exit /b
+)
+echo       Done!
+
+REM Seed database if not exists
+echo [2/4] Setting up database...
+if not exist "..\parking.db" (
+    python seed.py >nul 2>&1
+    echo       Database created with sample data!
+) else (
+    echo       Database already exists.
+)
+
+REM Start server
+echo [3/4] Starting server...
+start "ParkEase Server" cmd /k "cd /d "%~dp0backend" && python -m uvicorn app:app --host 0.0.0.0 --port 8000"
+
+REM Wait for server to start
 timeout /t 3 /nobreak >nul
+
+REM Open browser
+echo [4/4] Opening browser...
 start "" "http://localhost:8000"
+
 echo.
-echo ParkEase is running at http://localhost:8000
+echo ============================================
+echo    ParkEase is running!
+echo    Local:  http://localhost:8000
 echo.
+echo    Share your IP with teammates:
+echo    (run "ipconfig" to find your IPv4 address)
+echo    Example: http://192.168.x.x:8000
+echo ============================================
+echo.
+echo Press any key to stop the server...
 pause
+
+REM Cleanup
+taskkill /f /im "python.exe" /t >nul 2>&1
+echo Server stopped.
