@@ -120,16 +120,9 @@ Full list at **http://localhost:8000/docs** (Swagger UI)
 
 ---
 
-## 🌐 Deployment
+## 🌐 Same Network (LAN)
 
-### Same Network (LAN)
 Run the server, then share `http://YOUR_IP:8000` with teammates (find IP with `ipconfig`).
-
-### Internet (Render)
-1. Push to GitHub
-2. Connect repo at [render.com](https://render.com)
-3. Use the included `render.yaml` blueprint
-4. App deploys with PostgreSQL automatically
 
 ---
 
