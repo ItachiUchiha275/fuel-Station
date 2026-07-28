@@ -10,7 +10,6 @@
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav class="navbar">
   <div class="logo" onclick="goToDriver()" style="cursor:pointer">Park<span>Ease</span></div>
   <div class="nav-links">
@@ -34,7 +33,6 @@
 
 <div class="container">
 
-<!-- ===== PAGE: DRIVER ===== -->
 <div class="page active" id="page-driver">
   <div class="tabs">
     <button class="driver-tab active" id="dtab-map" onclick="switchDriverTab('map')"><i class="fas fa-map"></i> Map View</button>
@@ -92,7 +90,6 @@
   </div>
 </div>
 
-<!-- ===== PAGE: OPERATOR ===== -->
 <div class="page" id="page-operator">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
     <h2 style="color:#0d47a1"><i class="fas fa-oil-can"></i> Operator Dashboard</h2>
@@ -121,7 +118,6 @@
   </div>
 </div>
 
-<!-- ===== PAGE: ADMIN ===== -->
 <div class="page" id="page-admin">
   <h2 style="color:#0d47a1;margin-bottom:16px"><i class="fas fa-shield-alt"></i> Admin Panel</h2>
   <div class="tabs">
@@ -131,7 +127,6 @@
     <button class="admin-tab" id="atab-stations" onclick="switchAdminTab('stations')"><i class="fas fa-warehouse"></i> Stations</button>
   </div>
 
-  <!-- Analytics -->
   <div class="admin-panel" id="apanel-analytics">
     <div class="grid-4">
       <div class="stat-card stat-blue"><h3>Drivers</h3><div class="value" id="stat-drivers">-</div></div>
@@ -145,7 +140,6 @@
     </div>
   </div>
 
-  <!-- Approvals -->
   <div class="admin-panel hidden" id="apanel-approvals">
     <div class="card">
       <div class="card-header"><i class="fas fa-clock"></i> Pending Approvals</div>
@@ -155,7 +149,6 @@
     </div>
   </div>
 
-  <!-- Users -->
   <div class="admin-panel hidden" id="apanel-users">
     <div class="card">
       <div class="card-header"><i class="fas fa-users"></i> User Management</div>
@@ -175,7 +168,6 @@
     </div>
   </div>
 
-  <!-- Stations -->
   <div class="admin-panel hidden" id="apanel-stations">
     <div class="card">
       <div class="card-header"><i class="fas fa-warehouse"></i> All Stations</div>
@@ -187,8 +179,6 @@
 </div>
 
 </div>
-
-<!-- ===== MODALS ===== -->
 
 <!-- Login Modal -->
 <div class="modal-overlay hidden" id="login-modal">
@@ -212,7 +202,6 @@
   </div>
 </div>
 
-<!-- Signup Modal -->
 <div class="modal-overlay hidden" id="signup-modal">
   <div class="modal">
     <button class="modal-close">&times;</button>
@@ -264,7 +253,6 @@
   </div>
 </div>
 
-<!-- Profile Modal -->
 <div class="modal-overlay hidden" id="profile-modal">
   <div class="modal">
     <button class="modal-close">&times;</button>
@@ -303,7 +291,6 @@
   </div>
 </div>
 
-<!-- Reserve Modal -->
 <div class="modal-overlay hidden" id="reserve-modal">
   <div class="modal">
     <button class="modal-close">&times;</button>
@@ -329,7 +316,6 @@
   </div>
 </div>
 
-<!-- Station Create/Edit Modal (Operator) -->
 <div class="modal-overlay hidden" id="station-modal">
   <div class="modal">
     <button class="modal-close">&times;</button>
@@ -387,7 +373,6 @@
   </div>
 </div>
 
-<!-- Fuel Price Modal (Operator) -->
 <div class="modal-overlay hidden" id="fuel-price-modal">
   <div class="modal">
     <button class="modal-close">&times;</button>
@@ -407,7 +392,6 @@
   </div>
 </div>
 
-<!-- Admin User Edit Modal -->
 <div class="modal-overlay hidden" id="admin-user-modal">
   <div class="modal">
     <button class="modal-close">&times;</button>
@@ -458,7 +442,6 @@
   </div>
 </div>
 
-<!-- Admin Station Edit Modal -->
 <div class="modal-overlay hidden" id="admin-station-modal">
   <div class="modal">
     <button class="modal-close">&times;</button>

@@ -22,13 +22,12 @@ from models import (
     generate_token
 )
 
-# Create tables on startup
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Parking & Fuel Station Management")
 
 # Session secret (in production, use env var)
-app.add_middleware(SessionMiddleware, secret_key="parking-app-secret-key-change-in-prod")
+app.add_middleware(SessionMiddleware, secret_key="parking-app-secret-key-change-in-prod")  # swap this with an env var in prod
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -37,7 +36,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- Helpers ---
+
 
 def get_current_user(request: Request, db: Session = Depends(get_db)):
     user_id = request.session.get("user_id")
@@ -65,7 +64,7 @@ def haversine(lat1, lng1, lat2, lng2):
     return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
 
 
-# --- Pydantic Schemas ---
+
 
 class SignupRequest(BaseModel):
     name: str
@@ -142,7 +141,7 @@ class TokenLookup(BaseModel):
     token: str
 
 
-# --- Auth Routes ---
+
 
 @app.post("/api/auth/signup")
 def signup(req: SignupRequest, db: Session = Depends(get_db)):
@@ -212,7 +211,7 @@ def update_profile(req: ProfileUpdate, request: Request, db: Session = Depends(g
     return {"detail": "Profile updated"}
 
 
-# --- Station Routes (Provider) ---
+
 
 @app.post("/api/stations")
 def create_station(req: StationCreate, request: Request, db: Session = Depends(get_db)):
@@ -262,7 +261,7 @@ def get_my_stations(request: Request, db: Session = Depends(get_db)):
     return result
 
 
-# --- Nearby Stations (Public / Driver) ---
+
 
 @app.get("/api/stations/nearby")
 def nearby_stations(
@@ -406,7 +405,7 @@ def toggle_status(station_id: int, req: StatusUpdate, request: Request, db: Sess
     return {"is_open": station.is_open}
 
 
-# --- Fuel Price Routes ---
+
 
 @app.post("/api/stations/{station_id}/fuel-prices")
 def add_fuel_price(station_id: int, req: FuelPriceCreate, request: Request, db: Session = Depends(get_db)):
@@ -461,7 +460,7 @@ def delete_fuel_price(price_id: int, request: Request, db: Session = Depends(get
     return {"detail": "Fuel price deleted"}
 
 
-# --- Booking Routes ---
+
 
 @app.post("/api/bookings")
 def create_booking(req: BookingCreate, request: Request, db: Session = Depends(get_db)):
@@ -479,7 +478,6 @@ def create_booking(req: BookingCreate, request: Request, db: Session = Depends(g
     start_dt = datetime.fromisoformat(req.start_time)
     cost = req.duration_hours * station.hourly_rate
 
-    # Generate unique token
     token = generate_token()
     while db.query(Booking).filter(Booking.token == token).first():
         token = generate_token()
@@ -566,7 +564,7 @@ def get_booking_by_token(token: str, db: Session = Depends(get_db)):
     }
 
 
-# --- Operator Booking Verification ---
+
 
 @app.post("/api/bookings/verify")
 def verify_booking(req: TokenLookup, request: Request, db: Session = Depends(get_db)):
@@ -601,7 +599,7 @@ def complete_booking(booking_id: int, request: Request, db: Session = Depends(ge
     if booking.status != BookingStatus.active.value:
         raise HTTPException(status_code=400, detail="Booking is not active")
 
-    # Calculate overtime if any
+    # see if they stayed past their time
     now = datetime.utcnow()
     end_time = booking.start_time + timedelta(hours=booking.duration_hours)
     if now > end_time:
@@ -633,7 +631,7 @@ def cancel_booking(booking_id: int, request: Request, db: Session = Depends(get_
     return {"detail": "Booking canceled", "token": booking.token}
 
 
-# --- Admin Routes ---
+
 
 @app.get("/api/admin/pending-approvals")
 def pending_approvals(request: Request, db: Session = Depends(get_db)):
@@ -834,11 +832,9 @@ def admin_analytics(request: Request, db: Session = Depends(get_db)):
     }
 
 
-# --- Seed data on startup ---
 def seed_demo_data(db):
     if db.query(Station).count() > 0:
         return
-    # Create users
     for u in [
         {"name":"Demo Driver","email":"driver@test.com","phone":"+8801722222222","password":"pass123","role":"driver"},
         {"name":"Demo Operator","email":"operator@test.com","phone":"+8801711111111","password":"pass123","role":"operator"},
@@ -893,7 +889,6 @@ def startup():
     db.close()
 
 
-# Serve frontend static files
 app.mount("/", StaticFiles(directory="../frontend", html=True), name="frontend")
 
 

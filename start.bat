@@ -8,7 +8,7 @@ echo    University Project
 echo ============================================
 echo.
 
-REM Check Python
+REM make sure python is actually installed
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
     echo [ERROR] Python is not installed!
@@ -18,7 +18,7 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
-REM Install dependencies
+REM install everything we need
 echo [1/4] Installing dependencies...
 pip install -q fastapi uvicorn sqlalchemy python-multipart passlib bcrypt pydantic itsdangerous 2>&1
 if %errorlevel% neq 0 (
@@ -28,7 +28,7 @@ if %errorlevel% neq 0 (
 )
 echo       Done!
 
-REM Seed database if not exists
+REM seed the db if this is the first run
 echo [2/4] Setting up database...
 if not exist "..\parking.db" (
     python seed.py >nul 2>&1
@@ -37,14 +37,14 @@ if not exist "..\parking.db" (
     echo       Database already exists.
 )
 
-REM Start server
+REM fire up the server
 echo [3/4] Starting server...
 start "ParkEase Server" cmd /k "cd /d "%~dp0backend" && python -m uvicorn app:app --host 0.0.0.0 --port 8000"
 
-REM Wait for server to start
+REM give it a couple secs to boot
 timeout /t 3 /nobreak >nul
 
-REM Open browser
+REM open the browser so they can see it
 echo [4/4] Opening browser...
 start "" "http://localhost:8000"
 
@@ -61,6 +61,6 @@ echo.
 echo Press any key to stop the server...
 pause
 
-REM Cleanup
+REM kill the python process on exit
 taskkill /f /im "python.exe" /t >nul 2>&1
 echo Server stopped.

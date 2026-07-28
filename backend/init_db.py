@@ -2,7 +2,7 @@ import sys
 from database import engine, Base
 from models import User, Station, FuelPrice, Booking
 
-# Import all models above to register them with Base
+# gotta import models so Base knows about all the tables
 
 def init_database():
     Base.metadata.create_all(bind=engine)

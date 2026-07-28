@@ -98,7 +98,6 @@ class FuelPrice(Base):
     station = relationship("Station", back_populates="fuel_prices")
 
     __table_args__ = (
-        # Index for fuel type lookups per station
         None,
     )
 
@@ -126,7 +125,7 @@ class Booking(Base):
 
 
 def generate_token():
-    """Generate a unique 6-char token like PRK-892"""
+    """spits out a 6-char token like PRK-892"""
     letters = ''.join(random.choices(string.ascii_uppercase, k=3))
     digits = ''.join(random.choices(string.digits, k=3))
     return f"{letters}-{digits}"

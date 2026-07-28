@@ -27,7 +27,7 @@ function renderNav() {
     guest.classList.remove('hidden');
     user.classList.add('hidden');
   }
-  // Show role-appropriate nav items
+  // which nav items to show depends on role
   document.querySelectorAll('.role-nav').forEach(el => el.classList.add('hidden'));
   if (currentUser) {
     const roleLinks = document.querySelectorAll(`.role-${currentUser.role}`);
@@ -85,8 +85,6 @@ function routeAfterLogin() {
   else { show('page-driver'); initMap(); loadNearbyStations(); }
 }
 
-// --- AUTH MODAL HANDLERS ---
-
 document.addEventListener('DOMContentLoaded', async () => {
   await checkAuth();
 
@@ -107,20 +105,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (err) { alert('Update failed: ' + err.message); }
   });
 
-  // Show signup modal
+  // wire up the signup modal trigger
   document.querySelectorAll('[data-modal]').forEach(btn => {
     btn.addEventListener('click', () => modal(btn.dataset.modal, true));
   });
-  // Close modals on overlay click
+  // clicking the overlay backdrop closes the modal
   document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', (e) => { if (e.target === m) m.classList.add('hidden'); });
   });
-  // Close on X
+  // X button closes modal
   document.querySelectorAll('.modal-close').forEach(b => {
     b.addEventListener('click', () => { b.closest('.modal-overlay').classList.add('hidden'); });
   });
 
-  // Nav profile
+  // profile button in nav
   document.getElementById('nav-profile').addEventListener('click', () => {
     if (!currentUser) return;
     document.getElementById('profile-name').value = currentUser.name || '';
@@ -130,13 +128,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     modal('profile-modal', true);
   });
 
-  // Initialize driver page
+  // load map for driver page by default
   if (!currentUser || currentUser.role === 'driver') {
     initMap();
   }
 });
-
-// --- DRIVER PAGE ---
 
 let userLat = 23.6850;
 let userLng = 90.3563;
@@ -159,7 +155,7 @@ function initMap() {
     attribution: '&copy; OpenStreetMap'
   }).addTo(map);
 
-  // Get user location
+  // try to grab user's actual position
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -191,7 +187,7 @@ async function searchLocation() {
     const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)},Bangladesh&format=json&limit=5`);
     const data = await r.json();
     if (!data.length) { alert('Location not found'); return; }
-    // Show suggestions if multiple results
+    // if multiple results pop up, let user pick
     if (data.length > 1) {
       const names = data.map((d, i) => `${i+1}. ${d.display_name.split(',')[0]}`);
       const choice = prompt(`Multiple locations found. Enter number:\n${names.join('\n')}`);
@@ -253,7 +249,7 @@ async function loadNearbyStations() {
       marker.bindPopup(buildPopup(s));
       markers.push(marker);
 
-      // Add to list
+      // stick it in the list too
       const div = document.createElement('div');
       div.className = 'station-card';
       div.style.cursor = 'pointer';
@@ -307,7 +303,7 @@ function openReservation(stationId, name, hourlyRate) {
   document.getElementById('reserve-station-name').textContent = name;
   document.getElementById('reserve-station-id').value = stationId;
   document.getElementById('reserve-rate').textContent = hourlyRate;
-  // Set default start time to next hour
+  // default start = next hour
   const now = new Date();
   now.setHours(now.getHours() + 1, 0, 0, 0);
   document.getElementById('reserve-start').value = now.toISOString().slice(0, 16);
@@ -388,8 +384,6 @@ async function cancelMyBooking(bookingId) {
   } catch (err) { alert('Cancel failed: ' + err.message); }
 }
 
-// --- OPERATOR PAGE ---
-
 let operatorTab = 'stations';
 
 function switchOperatorTab(tab) {
@@ -404,7 +398,6 @@ function switchOperatorTab(tab) {
 
 async function loadOperatorDashboard() {
   loadOperatorStations();
-  // Switch to operator page
   show('page-operator');
   document.querySelectorAll('.op-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('otab-stations').classList.add('active');
@@ -634,8 +627,6 @@ async function cancelTokenBooking(id) {
   } catch (err) { alert('Failed: ' + err.message); }
 }
 
-// --- ADMIN PAGE ---
-
 let adminTab = 'approvals';
 
 function switchAdminTab(tab) {
@@ -834,11 +825,10 @@ async function saveAdminStation(e) {
   };
   try {
     await API.updateStation(id, data);
-    // Also update approval if admin
+    // also sync the approval dropdown value
     const approval = document.getElementById('as-approval').value;
     if (approval === 'Approved') await API.approveStation(id);
     else if (approval === 'Rejected') await API.rejectStation(id);
-    // Toggle status
     await API.toggleStatus(id, { is_open: document.getElementById('as-open').checked });
     modal('admin-station-modal', false);
     loadAdminStations();
@@ -864,7 +854,6 @@ async function loadAnalytics() {
   } catch (err) { console.error('Failed to load analytics:', err); }
 }
 
-// Nav button routing
 function goToDriver() { show('page-driver'); initMap(); loadNearbyStations(); }
 function goToOperator() { if (currentUser) { show('page-operator'); loadOperatorDashboard(); } else alert('Please login'); }
 function goToAdmin() { if (currentUser && currentUser.role === 'admin') { show('page-admin'); loadAdminDashboard(); } else alert('Admin only'); }
